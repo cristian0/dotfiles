@@ -1,4 +1,4 @@
-# Install command-line tools using Homebrew
+s# Install command-line tools using Homebrew
 
 # Make sure we’re using the latest Homebrew
 brew update
@@ -32,7 +32,7 @@ brew install grc
 brew install wget --enable-iri
 
 # Install more recent versions of some OS X tools
-brew install vim --override-system-vi
+#brew install vim --override-system-vi
 brew install homebrew/dupes/grep
 brew install homebrew/dupes/screen
 
@@ -42,13 +42,13 @@ brew install ack
 #install exiv2
 brew install git
 brew install imagemagick --with-webp
-brew install node # This installs `npm` too using the recommended installation method
+#brew install node # This installs `npm` too using the recommended installation method
 brew install pv
 brew install rename
 brew install tree
-brew install zopfli
+#brew install zopfli
 brew install ffmpeg --with-libvpx
-brew install android-platform-tools
+#brew install android-platform-tools
 
 # Remove outdated versions from the cellar
 brew cleanup

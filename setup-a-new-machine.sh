@@ -10,22 +10,22 @@
 
 # https://github.com/jamiew/git-friendly
 # the `push` command which copies the github compare URL to my clipboard is heaven
-bash < <( curl https://raw.github.com/jamiew/git-friendly/master/install.sh)
+#bash < <( curl https://raw.github.com/jamiew/git-friendly/master/install.sh)
 
 # https://rvm.io
 # rvm for the rubiess
-curl -L https://get.rvm.io | bash -s stable --ruby
+#curl -L https://get.rvm.io | bash -s stable --ruby
 
 # https://github.com/isaacs/nave
 # needs npm, obviously.
 # TODO: I think i'd rather curl down the nave.sh, symlink it into /bin and use that for initial node install.
-npm install -g nave
+#npm install -g nave
 
 
 # homebrew!
 # (google machines are funny so i have to do this. everyone else should use the regular thang)
-mkdir $HOME/.homebrew && curl -L https://github.com/mxcl/homebrew/tarball/master | tar xz --strip 1 -C $HOME/.homebrew
-export PATH=$HOME/.homebrew/bin:$HOME/.homebrew/sbin:$PATH
+#mkdir $HOME/.homebrew && curl -L https://github.com/mxcl/homebrew/tarball/master | tar xz --strip 1 -C $HOME/.homebrew
+#export PATH=$HOME/.homebrew/bin:$HOME/.homebrew/sbin:$PATH
 # install all the things
 ./brew.sh
 ./brew-cask.sh
@@ -56,7 +56,7 @@ git clone https://github.com/thebitguru/play-button-itunes-patch
 
 
 # for the c alias (syntax highlighted cat)
-sudo easy_install Pygments
+#sudo easy_install Pygments
 
 
 # change to bash 4 (installed by homebrew)
@@ -67,6 +67,10 @@ echo $BASH_VERSION # should be 4.x not the old 3.2.X
 
 # Later, confirm iterm settings aren't conflicting.
 
+# create your .gitconfig.local like this
+#[user]
+#    name = cristiano
+#    email = cristiano@eboox.it
 
 
 

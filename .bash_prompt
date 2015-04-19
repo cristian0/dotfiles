@@ -1,7 +1,7 @@
 # This prompt inspired by gf3, sindresorhus, alrra, and mathiasbynens.
 # but customized to me. <3
 
-default_username='paulirish'
+default_username=‘cris’
 
 
 if [[ $COLORTERM = gnome-* && $TERM = xterm ]] && infocmp gnome-256color >/dev/null 2>&1; then
@@ -70,8 +70,8 @@ set_prompts() {
 
         userhost=""
         userhost+="\[${userStyle}\]$USER "
-        userhost+="${white}at "
-        userhost+="${orange}$HOSTNAME "
+#        userhost+="${white}at "
+#        userhost+="${orange}$HOSTNAME "
         userhost+="${white}in"
 
         if [ $USER != "$default_username" ]; then echo $userhost ""; fi
