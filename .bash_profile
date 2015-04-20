@@ -47,6 +47,10 @@ export PROMPT_COMMAND="history -a; history -c; history -r; $PROMPT_COMMAND"
 #    source /etc/bash_completion;
 # fi;
 
+if [ -f `brew --prefix`/etc/bash_completion ]; then 
+    . `brew --prefix`/etc/bash_completion 
+fi
+
 # homebrew completion
 source `brew --repository`/Library/Contributions/brew_bash_completion.sh
 
@@ -77,3 +81,5 @@ shopt -s cdspell;
 #   github.com/rupa/z
 source ~/code/z/z.sh
 
+#boot2docker 
+docker-sh
