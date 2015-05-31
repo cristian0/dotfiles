@@ -116,3 +116,24 @@ Mathias's repo is the canonical for this, but you should probably run his or min
 ### Syntax highlighting for these files
 
 If you edit this stuff, install [Dotfiles Syntax Highlighting](https://github.com/mattbanks/dotfiles-syntax-highlighting-st2) via [Package Control](http://wbond.net/sublime_packages/package_control)
+
+
+
+#How to export settings
+
+##iTerm2
+```
+iTerm2 > Preferences > General > Load preferences from a custom folder or URL
+```
+Choose empty folder
+
+##HyperSwitch
+```
+cp ~/Library/Preferences/com.bahoom.HyperSwitch.plist com.bahoom.HyperSwitch.plist
+```
+
+##Spectacle
+```
+./spectacle-export.sh
+```
+

@@ -1,4 +1,4 @@
-s# Install command-line tools using Homebrew
+# Install command-line tools using Homebrew
 
 # Make sure we’re using the latest Homebrew
 brew update
@@ -46,9 +46,16 @@ brew install imagemagick --with-webp
 brew install pv
 brew install rename
 brew install tree
-#brew install zopfli
+brew install zopfli
 brew install ffmpeg --with-libvpx
 #brew install android-platform-tools
+
+
+brew install virtualbox
+brew install vagrant
+brew install docker
+
+brew install ansible
 
 # Remove outdated versions from the cellar
 brew cleanup

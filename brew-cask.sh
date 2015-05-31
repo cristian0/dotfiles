@@ -10,23 +10,39 @@ brew install caskroom/cask/brew-cask
 brew tap caskroom/versions
 
 # daily
-brew cask install alfred
+#brew cask install alfred
 brew cask install spectacle
 brew cask install dropbox
 #brew cask install gyazo
 #brew cask install onepassword
-brew cask install rescuetime
-# cask install flux
+#brew cask install rescuetime
+#brew cask install flux
+brew cask install hyperswitch
+brew cask install spectacle
+brew cask install macvim
 
 # dev
 brew cask install iterm2
-brew cask install sublime-text
+#brew cask install sublime-text
 brew cask install imagealpha
 brew cask install imageoptim
+brew cask install filezilla
+brew cask install mysqlworkbench
+brew cask install textwrangler
+brew cask install vagrant
+brew cask install vagrant-manager
+brew cask install virtualbox
+
+brew cask install docker-machine
+brew cask install docker-compose
+
 
 # fun
-#brew cask install limechat
+brew cask install limechat
 #brew cask install miro-video-converter
+brew cask install sonos
+brew cask install spotify
+brew cask install transmission-remote-gui
 
 # browsers
 #brew cask install google-chrome-canary
@@ -47,3 +63,10 @@ brew cask install imageoptim
 # 3Hub
 # File Multi Tool 5
 # Phosphor
+
+
+
+
+
+
+

@@ -138,12 +138,13 @@ webmify(){
 }
 
 # Docker with boot2docker
-function docker-ip {
-  boot2docker ip 2> /dev/null
-}
+#function docker-ip {
+#  boot2docker ip 2> /dev/null
+#}
 
 function docker-sh {
-    $(boot2docker shellinit 2> /dev/null)
+	# Docker (default for Vagrant based boxes)
+	export DOCKER_HOST=tcp://192.168.200.2:2375
 }
 
 function docker-bash {
