@@ -29,6 +29,7 @@ brew cask install imageoptim
 brew cask install filezilla
 brew cask install mysqlworkbench
 brew cask install textwrangler
+brew cask install caskroom/homebrew-cask/aptanastudio
 brew cask install vagrant
 brew cask install vagrant-manager
 brew cask install virtualbox
