@@ -20,6 +20,9 @@ brew cask install dropbox
 brew cask install hyperswitch
 brew cask install spectacle
 brew cask install macvim
+brew cask install appcleaner
+brew cask install google-drive
+brew cask install skype
 
 # dev
 brew cask install iterm2
@@ -29,6 +32,7 @@ brew cask install imageoptim
 brew cask install filezilla
 brew cask install mysqlworkbench
 brew cask install textwrangler
+brew cask install atom
 brew cask install caskroom/homebrew-cask/aptanastudio
 brew cask install vagrant
 brew cask install vagrant-manager
