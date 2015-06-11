@@ -507,6 +507,13 @@ defaults write -g NSShowAppCentricOpenPanelInsteadOfUntitledFile -bool false
 
 
 
+##############################################################################
+# Filezilla site manager                                                     #
+##############################################################################
+
+ln -s ~/Dropbox/dotfiles/.config/filezilla/ ~/.config/
+
+
 
 ###############################################################################
 # Kill affected applications                                                  #
