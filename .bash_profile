@@ -7,10 +7,10 @@ unset file
 
 # generic colouriser
 GRC=`which grc`
-if [ "$TERM" != dumb ] && [ -n "$GRC" ] 
+if [ "$TERM" != dumb ] && [ -n "$GRC" ]
     then
         alias colourify="$GRC -es --colour=auto"
-        alias configure='colourify ./configure' 
+        alias configure='colourify ./configure'
         for app in {diff,make,gcc,g++,mtr,ping,traceroute}; do
             alias "$app"='colourify '$app
         done
@@ -47,8 +47,8 @@ export PROMPT_COMMAND="history -a; history -c; history -r; $PROMPT_COMMAND"
 #    source /etc/bash_completion;
 # fi;
 
-if [ -f `brew --prefix`/etc/bash_completion ]; then 
-    . `brew --prefix`/etc/bash_completion 
+if [ -f `brew --prefix`/etc/bash_completion ]; then
+    . `brew --prefix`/etc/bash_completion
 fi
 
 # homebrew completion
@@ -64,12 +64,12 @@ fi;
 
 # Add tab completion for `defaults read|write NSGlobalDomain`
 # You could just use `-g` instead, but I like being explicit
-#complete -W "NSGlobalDomain" defaults
+complete -W "NSGlobalDomain" defaults
 
 
 ##
 ## better `cd`'ing
-## 
+##
 
 # Case-insensitive globbing (used in pathname expansion)
 shopt -s nocaseglob;
@@ -81,5 +81,14 @@ shopt -s cdspell;
 #   github.com/rupa/z
 source ~/code/z/z.sh
 
-#boot2docker 
+#boot2docker
 docker-sh
+
+# scommenta se phpp non funziona
+# export PATH="$(brew --prefix php56)/bin:$PATH"
+
+#composer
+export PATH="$PATH:~/.composer/vendor/bin"
+
+#aws autocomplete
+complete -C aws_completer aws

@@ -50,12 +50,18 @@ brew install zopfli
 brew install ffmpeg --with-libvpx
 #brew install android-platform-tools
 
-
-brew install virtualbox
-brew install vagrant
 brew install docker
 
 brew install ansible
+
+brew install awscli
+
+# homebrew-php
+brew tap homebrew/dupes
+brew tap homebrew/versions
+brew tap homebrew/homebrew-php
+brew install php56
+brew install composer
 
 # Remove outdated versions from the cellar
 brew cleanup

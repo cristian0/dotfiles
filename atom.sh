@@ -1,0 +1,15 @@
+apm install aligner-php
+apm install atom-autocomplete-php
+apm install atom-beautify
+apm install atom-ctags
+apm install autocomplete-php
+apm install last-cursor-position
+apm install linter
+apm install linter-php
+apm install linter-phpcs
+apm install linter-phpmd
+apm install merge-conflicts
+apm install php-class-tree
+apm install php-debug
+apm install php-getters-setters
+apm install php-introspector

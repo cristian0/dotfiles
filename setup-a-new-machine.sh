@@ -29,7 +29,12 @@
 # install all the things
 ./brew.sh
 ./brew-cask.sh
+# ora è installato anche php:
+# - which php # se è installato nel path altrimenti scommenta l'export in .bash_profile
 
+
+
+./atom.sh
 
 # https://github.com/rupa/z
 # z, oh how i love you
@@ -79,4 +84,3 @@ echo $BASH_VERSION # should be 4.x not the old 3.2.X
 #   put/move git credentials into ~/.gitconfig.local
 #   http://stackoverflow.com/a/13615531/89484
 ./symlink-setup.sh
-
