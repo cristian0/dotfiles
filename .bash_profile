@@ -84,11 +84,5 @@ source ~/code/z/z.sh
 #boot2docker
 docker-sh
 
-# scommenta se phpp non funziona
-# export PATH="$(brew --prefix php56)/bin:$PATH"
-
-#composer
-export PATH="$PATH:~/.composer/vendor/bin"
-
 #aws autocomplete
 complete -C aws_completer aws
