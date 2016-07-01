@@ -10,6 +10,7 @@ export LANG="en_US"
 
 export HOMEBREW_CASK_OPTS="--appdir=/Applications"
 
+export PATH="/usr/local/sbin:$PATH"
 
 # scommenta se php non funziona
 # export PATH="$(brew --prefix php56)/bin:$PATH"
