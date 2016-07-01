@@ -107,7 +107,7 @@ defaults write com.apple.SoftwareUpdate ScheduleFrequency -int 1
 
 # Enable full keyboard access for all controls
 # (e.g. enable Tab in modal dialogs)
-#defaults write NSGlobalDomain AppleKeyboardUIMode -int 3
+defaults write NSGlobalDomain AppleKeyboardUIMode -int 3
 
 # Enable access for assistive devices
 #echo -n 'a' | sudo tee /private/var/db/.AccessibilityAPIEnabled > /dev/null 2>&1
@@ -133,7 +133,7 @@ defaults write com.apple.universalaccess closeViewZoomFollowsFocus -bool false
 #defaults write com.apple.BezelServices kDimTime -int 300
 
 
-# I LOVE ME SOME speling autocorrect. 
+# I LOVE ME SOME speling autocorrect.
 #defaults write NSGlobalDomain NSAutomaticSpellingCorrectionEnabled -bool true
 
 ###############################################################################
@@ -141,7 +141,7 @@ defaults write com.apple.universalaccess closeViewZoomFollowsFocus -bool false
 ###############################################################################
 
 
-# Save screenshots to the desktop
+# Save screenshots to the Downloads
 defaults write com.apple.screencapture location -string "$HOME/Downloads"
 
 # Save screenshots in PNG format (other options: BMP, GIF, JPG, PDF, TIFF)
@@ -176,6 +176,12 @@ defaults write NSGlobalDomain AppleShowAllExtensions -bool true
 
 # Finder: allow text selection in Quick Look
 defaults write com.apple.finder QLEnableTextSelection -bool true
+
+# Finder: show complete path in Titlebar
+defaults write com.apple.finder _FXShowPosixPathInTitle -bool YES
+
+# Finder reboot
+killall Finder
 
 # When performing a search, search the current folder by default
 #defaults write com.apple.finder FXDefaultSearchScope -string "SCcf"
