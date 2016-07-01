@@ -68,9 +68,12 @@
 [help]
 	autocorrect = 1
 
-# push easily. http://stackoverflow.com/a/23918418/89484
+# push and pull easily. http://stackoverflow.com/a/23918418/89484
+[pull]
+    default = current
+
 [push]
-	default = current
+    default = current
 
 
 
@@ -81,3 +84,5 @@
 	clean = git lfs clean %f
 	smudge = git lfs smudge %f
 	required = true
+[credential]
+	helper = osxkeychain
