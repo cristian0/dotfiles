@@ -90,7 +90,7 @@ alias cleanup="find . -name '*.DS_Store' -type f -ls -delete"
 # Shortcuts
 alias g="git"
 alias gs="git status"
-alias v="vim"
+#alias v="vim"
 
 # File size
 alias fs="stat -f \"%z bytes\""
@@ -107,3 +107,7 @@ done
 
 
 alias a.="atom ."
+
+alias db="docker-bash"
+alias dba="docker-bash app"
+alias dps="docker ps"

@@ -137,16 +137,58 @@ webmify(){
 	ffmpeg -i $1 -vcodec libvpx -acodec libvorbis -isync -copyts -aq 80 -threads 3 -qmax 30 -y $2 $1.webm
 }
 
-# Docker with boot2docker
-#function docker-ip {
-#  boot2docker ip 2> /dev/null
-#}
-
-function docker-sh {
-	# Docker (default for Vagrant based boxes)
-	export DOCKER_HOST=tcp://192.168.200.2:2375
-}
-
 function docker-bash {
     docker exec -it $1 bash
+}
+
+# Eboox Code aliases
+
+v() {
+  cd ~/code/OSXContainerHost 
+	vagrant $@
+	cd - > /dev/null
+}
+
+dc() {
+  cd ~/code/docker 
+	docker-compose $@
+	cd - > /dev/null
+}
+
+oaproxy() {
+  site=$1
+	token=$2
+	secret=$3
+
+	if [ $site == "tannico" ]; then
+	  consumer_key=$CONSUMER_KEY_TANNICO
+	  consumer_secret=$CONSUMER_SECRET_TANNICO
+	  port="8002"
+	fi		
+
+	if [ $site == "shoppable" ]; then
+	  consumer_key=$CONSUMER_KEY_SHOPPABLE
+	  consumer_secret=CONSUMER_SECRET_SHOPPABLE
+		port="8003"
+	fi
+
+	if [ -z $consumer_key ]; then
+		echo "site $site non mappato."
+		return
+	fi
+
+	if [ $token == "kill" ]; then
+		proc=$(ps auxwww | grep oauth | grep $port | awk '{print $2}')
+		if [ -z $proc ]; then
+			echo "$site proxy not found"
+			return
+		fi
+		kill $proc
+		echo "$proc killed"
+		return
+	fi
+
+	command="oauth-proxy -p $port --consumer-key $consumer_key --consumer-secret $consumer_secret --token $token --token-secret $secret &"
+	eval $command
+	echo "use for $site : http --proxy=http:\\\\localhost:$port"
 }

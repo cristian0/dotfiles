@@ -1,6 +1,6 @@
 # Load ~/.extra, ~/.bash_prompt, ~/.exports, ~/.aliases and ~/.functions
 # ~/.extra can be used for settings you don’t want to commit
-for file in ~/.{extra,bash_prompt,exports,aliases,functions}; do
+for file in ~/.{extra,bash_prompt,exports,aliases,functions,secret}; do
 	[ -r "$file" ] && source "$file"
 done
 unset file
@@ -47,12 +47,9 @@ export PROMPT_COMMAND="history -a; history -c; history -r; $PROMPT_COMMAND"
 #    source /etc/bash_completion;
 # fi;
 
-if [ -f `brew --prefix`/etc/bash_completion ]; then
-    . `brew --prefix`/etc/bash_completion
+if [ -f $(brew --prefix)/etc/bash_completion ]; then
+    . $(brew --prefix)/etc/bash_completion
 fi
-
-# homebrew completion
-source `brew --repository`/Library/Contributions/brew_bash_completion.sh
 
 # Enable tab completion for `g` by marking it as an alias for `git`
 if type _git &> /dev/null && [ -f /usr/local/etc/bash_completion.d/git-completion.bash ]; then
@@ -77,12 +74,46 @@ shopt -s nocaseglob;
 # Autocorrect typos in path names when using `cd`
 shopt -s cdspell;
 
+#
+# setup ssh-agent
+#
+
+
+# set environment variables if user's agent already exists
+[ -z "$SSH_AUTH_SOCK" ] && SSH_AUTH_SOCK=$(ls -l /tmp/ssh-*/agent.* 2> /dev/null | grep $(whoami) | awk '{print $9}')
+[ -z "$SSH_AGENT_PID" -a -z `echo $SSH_AUTH_SOCK | cut -d. -f2` ] && SSH_AGENT_PID=$((`echo $SSH_AUTH_SOCK | cut -d. -f2` + 1))
+[ -n "$SSH_AUTH_SOCK" ] && export SSH_AUTH_SOCK
+[ -n "$SSH_AGENT_PID" ] && export SSH_AGENT_PID
+
+# start agent if necessary
+if [ -z $SSH_AGENT_PID ] && [ -z $SSH_TTY ]; then  # if no agent & not in ssh
+  eval `ssh-agent -s` > /dev/null
+fi
+
+# setup addition of keys when needed
+if [ -z "$SSH_TTY" ] ; then                     # if not using ssh
+  ssh-add -l > /dev/null                        # check for keys
+  if [ $? -ne 0 ] ; then
+    alias ssh='ssh-add -l > /dev/null || ssh-add && unalias ssh ; ssh'
+    if [ -f "/usr/lib/ssh/x11-Zssh-askpass" ] ; then
+      SSH_ASKPASS="/usr/lib/ssh/x11-ssh-askpass" ; export SSH_ASKPASS
+    fi
+  fi
+fi
+
+
+
 # z beats cd most of the time.
 #   github.com/rupa/z
 source ~/code/z/z.sh
 
-#boot2docker
-docker-sh
+# docker machine
+eval "$(docker-machine env default)"
 
 #aws autocomplete
 complete -C aws_completer aws
+
+export PATH=/usr/local/lib/python2.7:$PATH
+
+# ansible conf hosts
+# export ANSIBLE_HOSTS=$HOME/.ansible/hosts

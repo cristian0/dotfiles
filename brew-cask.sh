@@ -1,7 +1,7 @@
 
 
-# to maintain cask .... 
-#     brew update && brew upgrade brew-cask && brew cleanup && brew cask cleanup` 
+# to maintain cask ....
+# brew update && brew upgrade brew-cask && brew cleanup && brew cask cleanup`
 
 
 # Install native apps
@@ -18,11 +18,17 @@ brew cask install dropbox
 #brew cask install rescuetime
 #brew cask install flux
 brew cask install hyperswitch
-brew cask install spectacle
+#brew cask install spectacle
+brew cask install mattr-slate
 brew cask install macvim
 brew cask install appcleaner
 brew cask install google-drive
 brew cask install skype
+brew cask install flux
+
+brew cask install nvalt
+
+brew cask install asepsis
 
 # dev
 brew cask install iterm2
@@ -33,13 +39,14 @@ brew cask install filezilla
 brew cask install mysqlworkbench
 brew cask install textwrangler
 brew cask install atom
-brew cask install caskroom/homebrew-cask/aptanastudio
+#brew cask install caskroom/homebrew-cask/aptanastudio
+brew cask install virtualbox
 brew cask install vagrant
 brew cask install vagrant-manager
-brew cask install virtualbox
 
 brew cask install docker-machine
 brew cask install docker-compose
+# meld https://github.com/yousseb/meld/releases/tag/osx-v1
 
 
 # fun
@@ -48,6 +55,10 @@ brew cask install limechat
 brew cask install sonos
 brew cask install spotify
 brew cask install transmission-remote-gui
+
+
+brew cask install soundnode
+
 
 # browsers
 #brew cask install google-chrome-canary
@@ -68,10 +79,3 @@ brew cask install transmission-remote-gui
 # 3Hub
 # File Multi Tool 5
 # Phosphor
-
-
-
-
-
-
-

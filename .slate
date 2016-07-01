@@ -1,0 +1,22 @@
+config defaultToCurrentScreen true
+# Shows app icons and background apps, spreads icons in the same place.
+config windowHintsShowIcons true
+config windowHintsIgnoreHiddenWindows false
+config windowHintsSpread true
+config switchShowTitles true
+config switchOnlyFocusMainWindow false
+
+
+#bind e:cmd hint ASDFGHJKLQWERTYUIOPCVBN # use whatever keys you want
+
+alias leftHalf move screenOriginX;screenOriginY screenSizeX/2;screenSizeY
+alias rightHalf move screenOriginX+screenSizeX/2;screenOriginY screenSizeX/2;screenSizeY
+alias full move screenOriginX;screenOriginY screenSizeX;screenSizeY
+
+bind right:cmd;alt ${rightHalf}
+bind left:cmd;alt  ${leftHalf}
+bind up:cmd;alt  ${full}
+
+bind down:cmd;alt chain push left bar-resize:screenSizeX | throw next resize:screenSizeX;screenSizeY
+
+#bind tab:cmd switch
