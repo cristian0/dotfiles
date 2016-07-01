@@ -13,3 +13,4 @@ apm install php-class-tree
 apm install php-debug
 apm install php-getters-setters
 apm install php-introspector
+apm install minimap
