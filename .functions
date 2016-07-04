@@ -155,6 +155,10 @@ dc() {
 	cd - > /dev/null
 }
 
+docker-ip() {
+	docker inspect -f '{{.Name}} - {{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $(docker ps -q)
+}
+
 oaproxy() {
   site=$1
 	token=$2
