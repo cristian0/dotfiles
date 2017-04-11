@@ -20,6 +20,8 @@
 			git commit --amend -m \"$(git log -1 --pretty=%B)\n\nCloses #$1.\"; \
 		fi \
 	}; f"
+  
+  find = log --all --pretty=\"format:%C(bold blue)<%an>%Creset %Cgreen%H %Cblue%s\n%b%Creset\" --name-status --grep
 
 
 
@@ -63,8 +65,8 @@
 # Any GitHub repo with my username should be checked out r/w by default
 # http://rentzsch.tumblr.com/post/564806957/public-but-hackable-git-submodules
 
-[url "git@github.com:paulirish/"]
-  insteadOf = "git://github.com/paulirish/"
+[url "git@github.com:cristian0/"]
+  insteadOf = "git://github.com/cristian0/"
 [help]
 	autocorrect = 1
 
@@ -86,3 +88,5 @@
 	required = true
 [credential]
 	helper = osxkeychain
+[gui]
+	recentrepo = /Users/cristiano/code/site
