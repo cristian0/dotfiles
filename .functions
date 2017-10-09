@@ -144,13 +144,13 @@ function docker-bash {
 # Eboox Code aliases
 
 v() {
-  cd ~/code/OSXContainerHost 
+  cd ~/code/OSXContainerHost
 	vagrant $@
 	cd - > /dev/null
 }
 
 dc() {
-  cd ~/code/docker 
+  cd ~/code/docker
 	docker-compose $@
 	cd - > /dev/null
 }
@@ -160,24 +160,37 @@ docker-ip() {
 }
 
 oaproxy() {
-  site=$1
+	site=$1
 	token=$2
 	secret=$3
 
-	if [ $site == "tannico" ]; then
-	  consumer_key=$CONSUMER_KEY_TANNICO
-	  consumer_secret=$CONSUMER_SECRET_TANNICO
-	  port="8002"
-	fi		
+	if [ $site == "list" ]; then
+		ps auxwww | grep -v grep | grep oauth-proxy
+		return
+	fi
 
-	if [ $site == "shoppable" ]; then
-	  consumer_key=$CONSUMER_KEY_SHOPPABLE
-	  consumer_secret=CONSUMER_SECRET_SHOPPABLE
+	if [ $site == "killall" ]; then
+		ps auxwww | grep node.*oauth | grep -v grep  | awk '{print $2}' | while read -r proc ; do
+				kill $proc
+				echo "$proc killed"
+			done
+		return
+	fi
+
+	if [ $site == "mr" ]; then
+	  consumer_key="rjq0jhhhfaducgjam40ggpmm86my6mpq"
+	  consumer_secret="4d08w8847rdee4autw2jpchhjctumycc"
+	  port="8002"
+	fi
+
+	if [ $site == "wp" ]; then
+	  consumer_key="73950677305016d2831f07defe0ed9aa"
+	  consumer_secret="627c5fbbb579b313874ca5a3d8ac8979"
 		port="8003"
 	fi
 
 	if [ -z $consumer_key ]; then
-		echo "site $site non mappato."
+		echo "$site non mappato."
 		return
 	fi
 
@@ -195,4 +208,45 @@ oaproxy() {
 	command="oauth-proxy -p $port --consumer-key $consumer_key --consumer-secret $consumer_secret --token $token --token-secret $secret &"
 	eval $command
 	echo "use for $site : http --proxy=http:\\\\localhost:$port"
+}
+
+transfer() {
+    # write to output to tmpfile because of progress bar
+    tmpfile=$( mktemp -t transferXXX )
+    curl --progress-bar --upload-file $1 https://transfer.sh/$(basename $1) >> $tmpfile;
+    cat $tmpfile;
+    rm -f $tmpfile;
+}
+
+newrelic_deploy() {
+
+  local NEWRELIC_APP_ID="2227829"
+  local NEWRELIC_APIKEY="45ac388fc356c40bcebc78f7c55a4bd37fec399e9ef9b3d"
+  local NEWRELIC_DEPLOY_USER="cristiano"
+
+  local NEWRELIC_DEPLOY_REV=$1
+  shift
+  local NEWRELIC_DEPLOY_DESC=$@
+
+  curl -X POST "https://api.newrelic.com/v2/applications/${NEWRELIC_APP_ID}/deployments.json" \
+       -H "X-Api-Key:${NEWRELIC_APIKEY}" -i \
+       -H "Content-Type: application/json" \
+       -d \
+  "{
+    \"deployment\": {
+      \"revision\": \"${NEWRELIC_DEPLOY_REV}\",
+      \"description\": \"${NEWRELIC_DEPLOY_DESC}\",
+      \"user\": \"${NEWRELIC_DEPLOY_USER}\"
+    }
+  }"
+
+  echo "
+====================================
+New Relic deploy tracking sent:
+Revision: $NEWRELIC_DEPLOY_REV
+Description: $NEWRELIC_DEPLOY_DESC
+User: $NEWRELIC_DEPLOY_USER
+====================================
+
+"
 }
