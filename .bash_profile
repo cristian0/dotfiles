@@ -90,18 +90,19 @@ if [ -z $SSH_AGENT_PID ] && [ -z $SSH_TTY ]; then  # if no agent & not in ssh
   eval `ssh-agent -s` > /dev/null
 fi
 
-# setup addition of keys when needed
-if [ -z "$SSH_TTY" ] ; then                     # if not using ssh
-  ssh-add -l > /dev/null                        # check for keys
-  if [ $? -ne 0 ] ; then
-    alias ssh='ssh-add -l > /dev/null || ssh-add && unalias ssh ; ssh'
-    if [ -f "/usr/lib/ssh/x11-Zssh-askpass" ] ; then
-      SSH_ASKPASS="/usr/lib/ssh/x11-ssh-askpass" ; export SSH_ASKPASS
-    fi
-  fi
-fi
+# # setup addition of keys when needed
+# if [ -z "$SSH_TTY" ] ; then                     # if not using ssh
+#   ssh-add -l > /dev/null                        # check for keys
+#   if [ $? -ne 0 ] ; then
+#     alias ssh='ssh-add -l > /dev/null || ssh-add && unalias ssh ; ssh'
+#     if [ -f "/usr/lib/ssh/x11-Zssh-askpass" ] ; then
+#       SSH_ASKPASS="/usr/lib/ssh/x11-ssh-askpass" ; export SSH_ASKPASS
+#     fi
+#   fi
+# fi
 
-
+# add all stored ssh keys in Mac 
+ssh-add -A &> /dev/null
 
 # z beats cd most of the time.
 #   github.com/rupa/z
