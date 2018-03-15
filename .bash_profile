@@ -1,6 +1,6 @@
 # Load ~/.extra, ~/.bash_prompt, ~/.exports, ~/.aliases and ~/.functions
 # ~/.extra can be used for settings you don’t want to commit
-for file in ~/.{extra,bash_prompt,exports,aliases,functions,secret}; do
+for file in ~/.{extra,bash_prompt,exports,aliases,functions,secret,dc}; do
 	[ -r "$file" ] && source "$file"
 done
 unset file
@@ -101,7 +101,7 @@ fi
 #   fi
 # fi
 
-# add all stored ssh keys in Mac 
+# add all stored ssh keys in Mac
 ssh-add -A &> /dev/null
 
 # z beats cd most of the time.

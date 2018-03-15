@@ -1,0 +1,31 @@
+function dc-mysql-backup-db() {
+	if [ -z "$1" ]
+	  then
+	    echo "No argument supplied: please specify a zipfile name"
+	fi
+	# Stop the database container to prevent read/writes to it during the database
+	# export process.
+	docker stop mysql
+	# Now use the carinamarinab/backup image with the `backup` command to generate a
+	# tar.gz file based on the `/var/lib/mysql` directory in the `drupal_database`
+	# container.
+	docker run --rm --volumes-from mysql carinamarina/backup backup --source /var/lib/mysql/ --stdout --zip > $1
+}
+
+function dc-mysql-restore-db() {
+	if [ -z "$1" ]
+		then
+			echo "No argument supplied: please specify a zipfile name to restore"
+	fi
+	# Copy the data volume tar.gz file from your team's AWS S3 bucket.
+	if [ ! -f $1 ]; then aws s3 cp s3://tannico-dev/mysql-data-volume/$1 $1; fi
+	# Stop the database container to prevent read/writes during the database restore process.
+	docker stop mysql
+	# Remove the /var/lib/mysql contents from the database container.
+	docker run --rm --volumes-from mysql alpine:3.3 rm -rf /var/lib/mysql/*
+	# Use the carinamarina/backup image with the `restore` command to extract
+	# the tar.gz file contents into /var/lib/mysql in the database container.
+	docker run --rm --interactive --volumes-from mysql carinamarina/backup restore --destination /var/lib/mysql/ --stdin --zip < $1
+	# Start the database container again.
+	docker start mysql
+}
