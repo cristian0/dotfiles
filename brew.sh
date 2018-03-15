@@ -52,16 +52,18 @@ brew install ffmpeg --with-libvpx
 
 brew install docker
 
-#brew install ansible
+brew install ansible
+brew install httpie
+
 
 brew install awscli
 
 # homebrew-php
-brew tap homebrew/dupes
-brew tap homebrew/versions
-brew tap homebrew/homebrew-php
-brew install php56
-brew install composer
+#brew tap homebrew/dupes
+#brew tap homebrew/versions
+#brew tap homebrew/homebrew-php
+#brew install php56
+#brew install composer
 
 brew install ruby
 

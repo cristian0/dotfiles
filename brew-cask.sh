@@ -33,8 +33,8 @@ brew cask install asepsis
 # dev
 brew cask install iterm2
 #brew cask install sublime-text
-brew cask install imagealpha
-brew cask install imageoptim
+#brew cask install imagealpha
+#brew cask install imageoptim
 brew cask install filezilla
 brew cask install mysqlworkbench
 brew cask install textwrangler
@@ -48,16 +48,19 @@ brew cask install docker-machine
 brew cask install docker-compose
 # meld https://github.com/yousseb/meld/releases/tag/osx-v1
 
+brew cask install phpstorm
+
 
 # fun
-brew cask install limechat
+#brew cask install limechat
 #brew cask install miro-video-converter
 brew cask install sonos
 brew cask install spotify
 brew cask install transmission-remote-gui
 
-
 brew cask install soundnode
+brew cask install slack
+brew cask install nvalt
 
 
 # browsers
