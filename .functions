@@ -155,6 +155,64 @@ dc() {
 	cd - > /dev/null
 }
 
+
+dc-newversion() {
+
+	DC_ENV_OPTS_nov="-f docker-compose.yml -f docker-compose.no-varnish.yml"
+	DC_ENV_OPTS_lt="-f docker-compose.yml -f docker-compose.localtunnel.yml"
+	DC_ENV_OPTS_default=""
+
+DC_ENV_OPTS="123"
+export DC_ENV_OPTS
+return
+
+
+USAGE="Set docker-compose-file environment: dc env novar|lt|default
+Use like docker-compose command alias: dc [common options for docker-compose]
+"
+
+	if [[ $1 == "--help" ]]; then
+		echo "$USAGE"
+		return
+	fi
+
+	if [[ $1 == "env" ]]; then
+
+		if [[ $2 == "default" ]]; then
+			if [[ $DC_ENV_OPTS_default != $DC_ENV_OPTS ]]; then
+				dc $DC_ENV_OPTS stop
+				DC_ENV_OPTS=$DC_ENV_OPTS_default
+			fi
+		fi
+
+		if [[ $2 == "novar" ]]; then
+			if [[ $DC_ENV_OPTS_novar != $DC_ENV_OPTS ]]; then
+				dc $DC_ENV_OPTS stop
+				DC_ENV_OPTS=$DC_ENV_OPTS_novar
+				echo $DC_ENV_OPTS
+			fi
+		fi
+
+		if [[ $2 == "lt" ]]; then
+			if [[ $DC_ENV_OPTS_default != $DC_ENV_OPTS ]]; then
+				dc $DC_ENV_OPTS stop
+				DC_ENV_OPTS=$DC_ENV_OPTS_lt
+			fi
+		fi
+
+		shift 2
+	fi
+
+	export DC_ENV_OPTS
+
+	return
+
+  cd ~/code/docker
+	docker-compose $DC_ENV_OPTS $@
+	cd - > /dev/null
+}
+
+
 docker-ip() {
 	docker inspect -f '{{.Name}} - {{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $(docker ps -q)
 }
