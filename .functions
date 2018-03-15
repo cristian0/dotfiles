@@ -217,36 +217,3 @@ transfer() {
     cat $tmpfile;
     rm -f $tmpfile;
 }
-
-newrelic_deploy() {
-
-  local NEWRELIC_APP_ID="2227829"
-  local NEWRELIC_APIKEY="45ac388fc356c40bcebc78f7c55a4bd37fec399e9ef9b3d"
-  local NEWRELIC_DEPLOY_USER="cristiano"
-
-  local NEWRELIC_DEPLOY_REV=$1
-  shift
-  local NEWRELIC_DEPLOY_DESC=$@
-
-  curl -X POST "https://api.newrelic.com/v2/applications/${NEWRELIC_APP_ID}/deployments.json" \
-       -H "X-Api-Key:${NEWRELIC_APIKEY}" -i \
-       -H "Content-Type: application/json" \
-       -d \
-  "{
-    \"deployment\": {
-      \"revision\": \"${NEWRELIC_DEPLOY_REV}\",
-      \"description\": \"${NEWRELIC_DEPLOY_DESC}\",
-      \"user\": \"${NEWRELIC_DEPLOY_USER}\"
-    }
-  }"
-
-  echo "
-====================================
-New Relic deploy tracking sent:
-Revision: $NEWRELIC_DEPLOY_REV
-Description: $NEWRELIC_DEPLOY_DESC
-User: $NEWRELIC_DEPLOY_USER
-====================================
-
-"
-}
