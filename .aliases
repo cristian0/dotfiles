@@ -91,6 +91,7 @@ alias cleanup="find . -name '*.DS_Store' -type f -ls -delete"
 alias g="git"
 alias gs="git status"
 #alias v="vim"
+alias gc="git checkout"
 
 # File size
 alias fs="stat -f \"%z bytes\""
