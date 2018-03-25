@@ -11,14 +11,11 @@ brew tap caskroom/versions
 
 # daily
 brew cask install alfred
-brew cask install spectacle
 brew cask install dropbox
 #brew cask install gyazo
 #brew cask install onepassword
 #brew cask install rescuetime
 #brew cask install flux
-brew cask install hyperswitch
-#brew cask install spectacle
 brew cask install mattr-slate
 brew cask install macvim
 brew cask install appcleaner
