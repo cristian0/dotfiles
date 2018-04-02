@@ -51,11 +51,11 @@ brew cask install phpstorm
 # fun
 #brew cask install limechat
 #brew cask install miro-video-converter
-brew cask install sonos
+brew tap caskroom/drivers && brew cask install sonos
+brew cask install cumulus
 brew cask install spotify
 brew cask install transmission-remote-gui
 
-brew cask install soundnode
 brew cask install slack
 brew cask install nvalt
 
