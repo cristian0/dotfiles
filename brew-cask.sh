@@ -46,7 +46,7 @@ brew cask install docker-compose
 # meld https://github.com/yousseb/meld/releases/tag/osx-v1
 
 brew cask install phpstorm
-
+brew cask install rdm
 
 # fun
 #brew cask install limechat
