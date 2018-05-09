@@ -118,3 +118,8 @@ export PATH=/usr/local/lib/python2.7:$PATH
 
 # ansible conf hosts
 # export ANSIBLE_HOSTS=$HOME/.ansible/hosts
+
+if [ -f ~/.git-completion.bash ]; then
+  source ~/.git-completion.bash
+fi
+
