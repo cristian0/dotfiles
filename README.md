@@ -97,7 +97,7 @@ I don't know how other folks manage their $PATH, but this is how I do mine:
 PATH=$PATH:/opt/local/sbin
 PATH=$PATH:/bin
 PATH=$PATH:~/.rvm/bin
-PATH=$PATH:~/code/git-friendly
+PATH=$PATH:~/proj/git-friendly
 # ...
 
 export PATH

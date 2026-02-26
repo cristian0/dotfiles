@@ -106,15 +106,15 @@ ssh-add -A &> /dev/null
 
 # z beats cd most of the time.
 #   github.com/rupa/z
-source ~/code/z/z.sh
+source ~/proj/z/z.sh
 
 # docker machine
-eval "$(docker-machine env default)"
+#eval "$(docker-machine env default)"
 
 #aws autocomplete
-complete -C aws_completer aws
+#complete -C aws_completer aws
 
-export PATH=/usr/local/lib/python2.7:$PATH
+#export PATH=/usr/local/lib/python2.7:$PATH
 
 # ansible conf hosts
 # export ANSIBLE_HOSTS=$HOME/.ansible/hosts
@@ -123,3 +123,16 @@ if [ -f ~/.git-completion.bash ]; then
   source ~/.git-completion.bash
 fi
 
+## nvm (node version manager)
+export NVM_DIR="$HOME/.nvm"
+  [ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && \. "/opt/homebrew/opt/nvm/nvm.sh"  # This loads nvm
+  [ -s "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm"  # This loads nvm bash_completion
+
+## pyenv : https://github.com/pyenv/pyenv?tab=readme-ov-file#b-set-up-your-shell-environment-for-pyenv
+export PYENV_ROOT="$HOME/.pyenv"
+[[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
+eval "$(pyenv init - bash)"
+export PATH="/opt/homebrew/opt/ruby/bin:$PATH"
+
+# ClaudeCode
+export PATH="$HOME/.local/bin:$PATH"
