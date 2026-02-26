@@ -3,6 +3,7 @@
 .vim/viminfo
 .vim/swaps/*
 .vim/undo
+.vim/.netrwhist
 
 # git credential file 
 .gitconfig.local
