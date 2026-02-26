@@ -11,6 +11,9 @@
 # secure not on git
 .secret
 
+# local machine-specific config (not shared)
+.extra
+
 
 # Folder view configuration files
 .DS_Store
