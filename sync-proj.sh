@@ -12,6 +12,7 @@ ERROR_LOG="${LOG_DIR}/projsync.error"
 SCRIPT_DIR="${HOME}/scripts"
 SYNC_SCRIPT="${SCRIPT_DIR}/sync-proj.sh"
 PLIST_PATH="${HOME}/Library/LaunchAgents/com.user.projsync.plist"
+DEBOUNCE=30  # seconds to batch FS events before triggering sync
 
 # Functions
 show_usage() {
@@ -74,12 +75,11 @@ stop_service() {
     fi
 
     echo "Stopping auto-sync service..."
-    if launchctl bootout "gui/$(id -u)" "$PLIST_PATH" 2>/dev/null; then
-        echo "Auto-sync service stopped"
-    else
-        echo "Warning: Could not stop service. It may already be stopped."
-        return 1
-    fi
+    launchctl bootout "gui/$(id -u)" "$PLIST_PATH" 2>/dev/null || true
+    # Kill any leftover child processes
+    pkill -f "bash.*$SYNC_SCRIPT" 2>/dev/null || true
+    pkill -f "fswatch.*$(printf '%s' "${SOURCE_DIRS[0]}")" 2>/dev/null || true
+    echo "Auto-sync service stopped"
 }
 
 check_status() {
@@ -250,12 +250,17 @@ run_installation() {
             exit 0
         fi
 
-        # Unload existing job before reinstalling (if it's running)
+        # Unload existing job and kill stale processes before reinstalling
         if [ "$IS_RUNNING" = true ]; then
             echo "Unloading existing sync job..."
             launchctl bootout "gui/$(id -u)" "$PLIST_PATH" 2>/dev/null || true
             echo "Unloaded existing job"
         fi
+        # Kill any leftover sync-proj/fswatch processes from previous runs
+        pkill -f "bash.*$SYNC_SCRIPT" 2>/dev/null || true
+        pkill -f "fswatch.*$(printf '%s' "${SOURCE_DIRS[0]}")" 2>/dev/null || true
+        sleep 1
+        echo "Cleaned up stale processes"
     fi
 
     # Show installation plan
@@ -317,13 +322,12 @@ SOURCE_DIRS=("$HOME/proj" "$HOME/work")
 LOG_FILE="$HOME/.local/log/projsync.log"
 RSYNC=/opt/homebrew/bin/rsync
 FSWATCH=/opt/homebrew/bin/fswatch
-DEBOUNCE=5   # seconds to batch FS events before triggering sync
 
 send_notification() {
     local title="$1"
     local message="$2"
     if command -v terminal-notifier &> /dev/null; then
-        terminal-notifier -title "$title" -message "$message" -sound default 2>/dev/null
+        terminal-notifier -title "$title" -message "$message" 2>/dev/null
     else
         osascript -e "display notification \"$message\" with title \"$title\"" 2>/dev/null &
     fi
@@ -350,7 +354,15 @@ sync_directory() {
     mkdir -p "$DEST_DIR"
     echo "--- Syncing $SOURCE_DIR -> $DEST_DIR ---"
 
-    if ! $RSYNC -a --exclude='*/' "$SOURCE_DIR/" "$DEST_DIR/"; then
+    local output nfiles
+    if output=$($RSYNC -ai --exclude='*/' "$SOURCE_DIR/" "$DEST_DIR/"); then
+        if [ -n "$output" ]; then
+            nfiles=$(echo "$output" | wc -l | tr -d ' ')
+            CHANGED_FILES=$((CHANGED_FILES + nfiles))
+            CHANGED_DIRS+=("$name/")
+            echo "$output"
+        fi
+    else
         send_notification "Sync error: $name" "rsync failed for root-level files. Check ~/.local/log/projsync.error"
         echo "ERROR: rsync failed for root-level files in $SOURCE_DIR"
     fi
@@ -361,8 +373,15 @@ sync_directory() {
         dirname=$(basename "$dir")
 
         if [ ! -d "$dir/.git" ]; then
-            echo "Syncing: $dirname"
-            if ! $RSYNC -a --delete "$dir" "$DEST_DIR/$dirname/"; then
+            if output=$($RSYNC -ai --delete "$dir" "$DEST_DIR/$dirname/"); then
+                if [ -n "$output" ]; then
+                    nfiles=$(echo "$output" | wc -l | tr -d ' ')
+                    CHANGED_FILES=$((CHANGED_FILES + nfiles))
+                    CHANGED_DIRS+=("$name/$dirname")
+                    echo "Synced: $dirname ($nfiles files)"
+                    echo "$output"
+                fi
+            else
                 send_notification "Sync error: $name/$dirname" "rsync failed for $dirname. Check ~/.local/log/projsync.error"
                 echo "ERROR: rsync failed for $dirname"
             fi
@@ -379,13 +398,21 @@ sync_directory() {
 
 do_sync() {
     rotate_log_if_needed
+    CHANGED_FILES=0
+    CHANGED_DIRS=()
     echo ""
     echo "=== Sync triggered at $(date) ==="
     for src in "${SOURCE_DIRS[@]}"; do
         sync_directory "$src" "${BACKUP_DIR}/$(basename "$src")"
     done
     echo "=== Sync complete at $(date) ==="
-    send_notification "Backup synced" "proj and work backed up to ~/Documents/Backup"
+    if [ "$CHANGED_FILES" -gt 0 ]; then
+        local dirs_summary
+        dirs_summary=$(printf '%s' "${CHANGED_DIRS[*]}" | sed 's/ /, /g')
+        send_notification "Backup synced" "$CHANGED_FILES file(s) in $dirs_summary"
+    else
+        echo "(no changes)"
+    fi
 }
 
 # Run an initial sync on startup (or just once if --once flag passed)
@@ -395,10 +422,12 @@ do_sync
 echo ""
 echo "Watching for changes in: ${SOURCE_DIRS[*]}"
 
-# Watch source dirs and sync within ~5s of any change
-$FSWATCH --latency "$DEBOUNCE" -o "${SOURCE_DIRS[@]}" | while read -r _; do
+# Watch source dirs and sync within ~30s of any change
+while read -r _; do
+    # Drain any queued events before syncing
+    while read -r -t 1 _; do :; done
     do_sync
-done
+done < <($FSWATCH --latency 30 -o "${SOURCE_DIRS[@]}")
 SYNCSCRIPT
 
     chmod +x "$SYNC_SCRIPT"
@@ -475,7 +504,7 @@ PLISTFILE
         echo "  $src -> ${BACKUP_DIR}/${name}"
     done
     echo "  Sync script: $SYNC_SCRIPT"
-    echo "  Sync mode: real-time (within ~5s of any change)"
+    echo "  Sync mode: real-time (within ~${DEBOUNCE}s of any change)"
     echo ""
     echo "Logs are available at:"
     echo "  $LOG_FILE"
