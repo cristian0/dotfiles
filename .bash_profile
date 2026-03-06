@@ -135,4 +135,4 @@ eval "$(pyenv init - bash)"
 export PATH="/opt/homebrew/opt/ruby/bin:$PATH"
 
 # ClaudeCode
-export PATH="$HOME/.local/bin:$PATH"
+export PATH="$HOME/.local/bin:$PATH"export PATH="/opt/homebrew/opt/mysql-client@8.0/bin:$PATH"
