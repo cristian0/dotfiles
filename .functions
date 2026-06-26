@@ -169,3 +169,29 @@ function o() {
 function tre() {
 	tree -aC -I '.git|node_modules|bower_components' --dirsfirst "$@" | less -FRNX;
 }
+
+# Attach to the live Claude Code teammate swarm via iTerm2's native tmux
+# integration (`-CC`), so each teammate renders as a real iTerm2 pane.
+# Run it in a spare pane while teammates are working. Auto-detects the live
+# `claude-swarm-<pid>` socket; lists the choices if more than one is active.
+function cswarm() {
+	local uid d s name;
+	local -a live;
+	uid=$(id -u);
+	for d in "${TMPDIR:-/tmp}tmux-${uid}" "/tmp/tmux-${uid}"; do
+		[ -d "${d}" ] || continue;
+		for s in "${d}"/claude-swarm-*; do
+			[ -e "${s}" ] || continue;
+			name=$(basename "${s}");
+			tmux -L "${name}" ls &> /dev/null && live+=("${name}");
+		done;
+	done;
+	if [ "${#live[@]}" -eq 0 ]; then
+		echo "No active Claude swarm.";
+	elif [ "${#live[@]}" -eq 1 ]; then
+		tmux -CC -L "${live[0]}" attach;
+	else
+		echo "Multiple swarms active, pick one:";
+		printf '  tmux -CC -L %s attach\n' "${live[@]}";
+	fi;
+}
