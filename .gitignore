@@ -32,3 +32,5 @@ Thumbs.db
 
 # ctags
 .tags*
+
+**/.claude/settings.local.json

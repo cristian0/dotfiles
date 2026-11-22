@@ -35,3 +35,5 @@ export GPG_TTY=$(tty);
 
 # Hide the “default interactive shell is now zsh” warning on macOS.
 export BASH_SILENCE_DEPRECATION_WARNING=1;
+# Disable caveman mode auto-activation in Claude Code sessions
+export CAVEMAN_DEFAULT_MODE=off;
