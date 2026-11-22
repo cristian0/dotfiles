@@ -1,0 +1,236 @@
+#!/usr/bin/env bash
+#
+# .shared — alias e funzioni portabili, condivisi tra Mac e Omarchy/Linux.
+#
+# Le parti specifiche di un OS sono racchiuse in guardie `uname`, così il file
+# è innocuo ovunque. Su Omarchy viene caricato DOPO lo stack di default (via
+# ~/.extra), quindi qui NON ridefiniamo ls/cd/open/c ecc. già forniti da
+# Omarchy (eza/zoxide/opencode): aggiungiamo solo ciò che manca.
+#
+# Mac: sorgi questo file dal tuo .bash_profile/.aliases se vuoi usarlo anche lì.
+# Omarchy: `source ~/proj/dotfiles/.shared` dentro ~/.extra.
+
+__is_mac() { [ "$(uname -s)" = "Darwin" ]; }
+
+# ---------------------------------------------------------------------------
+# Ambiente shell / completion
+# ---------------------------------------------------------------------------
+
+# --- history (migliorie portate dal Mac) -----------------------------------
+# timestamp data/ora accanto a ogni voce della history
+export HISTTIMEFORMAT='%F %T '
+# history enorme (Omarchy di default è 32768)
+export HISTSIZE=100000
+export HISTFILESIZE="${HISTSIZE}"
+# ignoreboth (dup consecutivi + comandi con spazio iniziale) + erasedups
+# (cancella TUTTI i duplicati pregressi, non solo quelli consecutivi)
+export HISTCONTROL=ignoreboth:erasedups
+shopt -s histappend
+# history condivisa in tempo reale tra tutti i terminali aperti:
+# a ogni prompt salva (-a), svuota (-c) e ricarica (-r) dal file.
+# Prepende ai PROMPT_COMMAND esistenti (es. starship), una sola volta.
+if [[ ";${PROMPT_COMMAND};" != *";__hist_sync;"* ]]; then
+	__hist_sync() { history -a; history -c; history -r; }
+	PROMPT_COMMAND="__hist_sync;${PROMPT_COMMAND:+ ${PROMPT_COMMAND}}"
+fi
+# ---------------------------------------------------------------------------
+
+# tab-completion di ssh/scp/sftp dagli host in ~/.ssh/config (no wildcard)
+if [ -r "$HOME/.ssh/config" ]; then
+	complete -o "default" -o "nospace" \
+		-W "$(grep -i '^Host ' ~/.ssh/config | grep -v '[?*]' | cut -d ' ' -f2-)" \
+		scp sftp ssh
+fi
+
+# ---------------------------------------------------------------------------
+# Alias portabili
+# ---------------------------------------------------------------------------
+
+# comodità varie
+alias where='which'
+alias please='sudo'
+alias reload='exec ${SHELL} -l'
+
+# edita gli host locali (es. 127.0.0.1 qualcosa.com)
+alias hosts='sudo $EDITOR /etc/hosts'
+
+# interattività sicura
+alias rm='rm -i'
+
+# grep a colori
+alias grep='grep --color=auto'
+alias fgrep='fgrep --color=auto'
+alias egrep='egrep --color=auto'
+
+# numero della settimana
+alias week='date +%V'
+
+# dig conciso + il mio IP pubblico
+alias dig='dig +nocmd any +multiline +noall +answer'
+alias publicip='dig +short myip.opendns.com @resolver1.opendns.com'
+
+# IP locale: primario (localip) e tutte le interfacce (ips)
+if __is_mac; then
+	alias localip="ipconfig getifaddr en0"
+	alias ips="ifconfig -a | grep -o 'inet6\? \(addr:\)\?\s\?\(\(\([0-9]\+\.\)\{3\}[0-9]\+\)\|[a-fA-F0-9:]\+\)' | awk '{ sub(/inet6? (addr:)? ?/, \"\"); print }'"
+else
+	# su Linux `ip` è il comando di rete: niente alias `ip`, uso publicip sopra
+	alias localip="ip -4 -br addr show scope global | awk '{print \$3}' | cut -d/ -f1 | head -1"
+	alias ips="ip -br addr"
+fi
+
+# map: applica un comando a ogni riga di stdin
+#   find . -name .gitattributes | map dirname
+alias map='xargs -n1'
+
+# stampa ogni voce del PATH su una riga
+alias path='echo -e ${PATH//:/\\n}'
+
+# metodi HTTP via lwp-request (solo se disponibile)
+if command -v lwp-request >/dev/null 2>&1; then
+	for method in GET HEAD POST PUT DELETE TRACE OPTIONS; do
+		alias "${method}"="lwp-request -m '${method}'"
+	done
+	unset method
+fi
+
+# unisce più PDF preservando i link (serve ghostscript)
+#   mergepdf input{1,2,3}.pdf  ->  _merged.pdf
+command -v gs >/dev/null 2>&1 && \
+	alias mergepdf='gs -q -dNOPAUSE -dBATCH -sDEVICE=pdfwrite -sOutputFile=_merged.pdf'
+
+# ---------------------------------------------------------------------------
+# Funzioni portabili
+# ---------------------------------------------------------------------------
+
+# crea una cartella e ci entra
+mkd() {
+	mkdir -p "$@" && cd "$_" || return
+}
+
+# dimensione di un file o totale di una cartella
+fs() {
+	if du -b /dev/null >/dev/null 2>&1; then
+		local arg=-sbh
+	else
+		local arg=-sh
+	fi
+	if [[ -n "$*" ]]; then
+		du $arg -- "$@"
+	else
+		du $arg .[^.]* ./*
+	fi
+}
+
+# crea un .tar.gz usando zopfli/pigz/gzip (fallback stat GNU+BSD)
+targz() {
+	local tmpFile="${*%/}.tar"
+	tar -cvf "${tmpFile}" --exclude=".DS_Store" "$@" || return 1
+
+	local size
+	size=$(
+		stat -f"%z" "${tmpFile}" 2>/dev/null  # BSD/macOS
+		stat -c"%s" "${tmpFile}" 2>/dev/null  # GNU
+	)
+
+	local cmd=""
+	if (( size < 52428800 )) && hash zopfli 2>/dev/null; then
+		cmd="zopfli"
+	elif hash pigz 2>/dev/null; then
+		cmd="pigz"
+	else
+		cmd="gzip"
+	fi
+
+	echo "Compressing .tar ($((size / 1000)) kB) using \`${cmd}\`…"
+	"${cmd}" -v "${tmpFile}" || return 1
+	[ -f "${tmpFile}" ] && rm "${tmpFile}"
+	echo "${tmpFile}.gz created successfully."
+}
+
+# confronta dimensione originale e gzippata
+gz() {
+	local origsize gzipsize ratio
+	origsize=$(wc -c < "$1")
+	gzipsize=$(gzip -c "$1" | wc -c)
+	ratio=$(echo "$gzipsize * 100 / $origsize" | bc -l)
+	printf "orig: %d bytes\n" "$origsize"
+	printf "gzip: %d bytes (%2.2f%%)\n" "$gzipsize" "$ratio"
+}
+
+# crea una data URL da un file
+dataurl() {
+	local mimeType
+	mimeType=$(file -b --mime-type "$1")
+	[[ $mimeType == text/* ]] && mimeType="${mimeType};charset=utf-8"
+	echo "data:${mimeType};base64,$(openssl base64 -in "$1" | tr -d '\n')"
+}
+
+# dig + info più utili
+digga() {
+	dig +nocmd "$1" any +multiline +noall +answer
+}
+
+# mostra i nomi (CN e SAN) del certificato SSL di un dominio
+getcertnames() {
+	if [ -z "${1}" ]; then
+		echo "ERROR: No domain specified."
+		return 1
+	fi
+	local domain="${1}" tmp certText
+	echo "Testing ${domain}…"
+	echo ""
+	tmp=$(echo -e "GET / HTTP/1.0\nEOT" \
+		| openssl s_client -connect "${domain}:443" -servername "${domain}" 2>&1)
+	if [[ "${tmp}" = *"-----BEGIN CERTIFICATE-----"* ]]; then
+		certText=$(echo "${tmp}" \
+			| openssl x509 -text -certopt "no_aux, no_header, no_issuer, no_pubkey, \
+			no_serial, no_sigdump, no_signame, no_validity, no_version")
+		echo "Common Name:"; echo ""
+		echo "${certText}" | grep "Subject:" | sed -e "s/^.*CN=//" | sed -e "s/\/emailAddress=.*//"
+		echo ""; echo "Subject Alternative Name(s):"; echo ""
+		echo "${certText}" | grep -A 1 "Subject Alternative Name:" \
+			| sed -e "2s/DNS://g" -e "s/ //g" | tr "," "\n" | tail -n +2
+		return 0
+	else
+		echo "ERROR: Certificate not found."
+		return 1
+	fi
+}
+
+# server HTTP statico dalla cartella corrente (porta opzionale, default 8000)
+# usa python3 (il SimpleHTTPServer di python2 dell'originale non esiste più)
+server() {
+	local port="${1:-8000}"
+	python3 -m http.server "$port"
+}
+
+# tree con file nascosti e colori, saltando .git/node_modules, dentro less
+tre() {
+	tree -aC -I '.git|node_modules|bower_components' --dirsfirst "$@" | less -FRNX
+}
+
+# clip: copia stdin negli appunti, cross-platform (rimpiazza `c` di Mathias,
+# che su Omarchy sarebbe in conflitto con l'alias `c=opencode`)
+clip() {
+	if __is_mac; then
+		tr -d '\n' | pbcopy
+	elif command -v wl-copy >/dev/null 2>&1; then
+		tr -d '\n' | wl-copy
+	elif command -v xclip >/dev/null 2>&1; then
+		tr -d '\n' | xclip -selection clipboard
+	else
+		echo "clip: nessun tool clipboard disponibile" >&2
+		return 1
+	fi
+}
+
+# ---------------------------------------------------------------------------
+# Solo macOS
+# ---------------------------------------------------------------------------
+if __is_mac; then
+	# cd alla cartella della finestra Finder più in alto
+	cdf() {
+		cd "$(osascript -e 'tell app "Finder" to POSIX path of (insertion location as alias)')" || return
+	}
+fi
