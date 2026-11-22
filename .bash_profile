@@ -17,23 +17,9 @@ if [ "$TERM" != dumb ] && [ -n "$GRC" ]
 fi
 
 ##
-## gotta tune that bash_history…
+## bash history → centralizzata in ~/proj/dotfiles/.shared
+## (sorgente in fondo a questo file, condivisa con Omarchy)
 ##
-
-# timestamps for later analysis. www.debian-administration.org/users/rossen/weblog/1
-export HISTTIMEFORMAT='%F %T '
-
-# keep history up to date, across sessions, in realtime
-#  http://unix.stackexchange.com/a/48113
-export HISTCONTROL=ignoredups:erasedups  # no duplicate entries
-export HISTSIZE=100000                   # big big history (default is 500)
-export HISTFILESIZE=$HISTSIZE            # big big history
-shopt -s histappend;                     # append to history, don't overwrite it
-
-# Save and reload the history after each command finishes
-export PROMPT_COMMAND="history -a; history -c; history -r; $PROMPT_COMMAND"
-
-# ^ the only downside with this is [up] on the readline will go over all history not just this bash session.
 
 
 ##
@@ -137,3 +123,7 @@ export PATH="/opt/homebrew/opt/ruby/bin:$PATH"
 # ClaudeCode
 export PATH="$HOME/.local/bin:$PATH"
 export PATH="/opt/homebrew/opt/mysql-client@8.0/bin:$PATH"
+
+# Alias/funzioni/history portabili condivisi con Omarchy (sorgi per ultimo,
+# così vince sulle impostazioni qui sopra). Vedi README → "Dove vanno le modifiche".
+[ -r ~/proj/dotfiles/.shared ] && source ~/proj/dotfiles/.shared

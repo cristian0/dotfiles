@@ -4,8 +4,25 @@
 * You're quite welcome to make suggestions, however I may decline if it's not of personal value to me.
 * If you're starting off consider forking [mathias](https://github.com/mathiasbynens/dotfiles/) or [alrra](https://github.com/alrra/dotfiles/). paulmillr and gf3 also have great setups
 
+## Dove vanno le modifiche (Mac + Omarchy)
+
+Questo repo è condiviso tra il **Mac** e il portatile **Omarchy** (Arch + Hyprland). Prima di aggiungere un alias/funzione/variabile, scegli il file in base al tipo:
+
+| Tipo di modifica | File | Note |
+|---|---|---|
+| **Portabile** (serve su entrambi) | [`.shared`](.shared) | alias/funzioni/history cross-platform; le parti OS-specifiche vanno dentro `if __is_mac`. **È qui che va la roba nuova, di default.** |
+| **Solo Mac** | `.aliases`, `.functions`, `.exports`, `.bash_profile` | caricati solo sul Mac. Su Omarchy questi file esistono nel repo ma non vengono usati. |
+| **Solo Omarchy** | `~/.extra` (NON committato) | file locale della macchina; su Omarchy è anche il punto che sorge `.shared`. |
+| **Privato / macchina-specifico** | `~/.extra`, `~/.secret`, `.gitconfig.local` | gitignored, mai nel repo. |
+
+**Come viene caricato `.shared`:**
+- **Mac:** sorgente in fondo a `.bash_profile` (dopo gli altri file, così vince sulle impostazioni locali).
+- **Omarchy:** sorgente da `~/.extra`, che il `~/.bashrc` di Omarchy carica dopo il suo stack. Omarchy **non** usa `.bashrc`/`.bash_profile`/`.inputrc`/`.bash_prompt` del repo: ha i suoi (starship, eza, zoxide).
+
+⚠️ **Su Omarchy installa con [`install-omarchy.sh`](install-omarchy.sh), NON con `symlink-setup.sh`.** Quest'ultimo symlinkerebbe `.bashrc`/`.bash_profile`/… nella home e romperebbe lo stack Omarchy.
+
 ## Setup
-#### installing & using
+#### installing & using (Mac)
 
 * fork this to your own acct
 * clone that repo
@@ -13,6 +30,12 @@
 * read and run `symlink-setup.sh`
   * git config needs attention, read the notes.
 * use it. yay!
+
+#### installing & using (Omarchy)
+
+* clona il repo in `~/proj/dotfiles`
+* lancia `./install-omarchy.sh` (aggancia solo `.shared` da `~/.extra`)
+* **non** lanciare `symlink-setup.sh` né `brew.sh` né `.osx`
 
 #### maintenance
 

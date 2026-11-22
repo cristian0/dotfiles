@@ -74,7 +74,8 @@ alias canary='/Applications/Google\ Chrome\ Canary.app/Contents/MacOS/Google\ Ch
 alias dig="dig +nocmd any +multiline +noall +answer"
 
 # IP addresses
-alias ip="dig +short myip.opendns.com @resolver1.opendns.com"
+# NB: `ip` (IP pubblico) e `localip` sono ora in ~/proj/dotfiles/.shared
+#     (`publicip` + `localip` cross-platform). Qui resta solo `ips`.
 alias localip="ipconfig getifaddr en0"
 alias ips="ifconfig -a | grep -o 'inet6\? \(addr:\)\?\s\?\(\(\([0-9]\+\.\)\{3\}[0-9]\+\)\|[a-fA-F0-9:]\+\)' | awk '{ sub(/inet6? (addr:)? ?/, \"\"); print }'"
 
@@ -101,8 +102,8 @@ jscbin="/System/Library/Frameworks/JavaScriptCore.framework/Versions/A/Resources
 [ -e "${jscbin}" ] && alias jsc="${jscbin}";
 unset jscbin;
 
-# Trim new lines and copy to clipboard
-alias c="tr -d '\n' | pbcopy"
+# Trim new lines and copy to clipboard → ora è `clip` in ~/proj/dotfiles/.shared
+# (cross-platform: pbcopy su Mac, wl-copy su Omarchy)
 
 # Recursively delete `.DS_Store` files
 alias cleanup="find . -type f -name '*.DS_Store' -ls -delete"

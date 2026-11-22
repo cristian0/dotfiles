@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Repository Overview
 
-This is a personal dotfiles repository containing shell configuration, aliases, functions, and environment setup for macOS development. The repository provides a collection of bash configurations, vim setup, and installation scripts for bootstrapping a new machine.
+This is a personal dotfiles repository containing shell configuration, aliases, functions, and environment setup. Born as a macOS-only repo (mathias/alrra pattern), it is now **shared between two machines**: the **Mac** and a laptop on **Omarchy** (Arch Linux + Hyprland).
 
 **Key points:**
 - This is a personal dotfiles repo maintained primarily for the owner's use
@@ -12,6 +12,18 @@ This is a personal dotfiles repository containing shell configuration, aliases, 
 - All files in the root are configuration files (prefixed with `.`) or setup scripts
 - The `.vim/` directory contains Vim configuration and plugins
 - The `bin/` directory contains executable utilities
+
+### ⚠️ Dove vanno le modifiche (leggere prima di aggiungere config)
+
+| Tipo | File | Chi lo usa |
+|---|---|---|
+| **Portabile** (Mac + Omarchy) | `.shared` | **default per roba nuova**; parti OS-specifiche in `if __is_mac` |
+| **Solo Mac** | `.aliases`, `.functions`, `.exports`, `.bash_profile`, `.bash_prompt`, `.inputrc` | solo il Mac; su Omarchy esistono ma NON sono usati |
+| **Solo Omarchy / privato** | `~/.extra` (gitignored) | locale di macchina; su Omarchy sorge anche `.shared` |
+
+`.shared` è sorgente in fondo a `.bash_profile` (Mac) e da `~/.extra` (Omarchy), così vince sempre sulle impostazioni precedenti. Omarchy ha il suo stack (starship/eza/zoxide) e NON usa i file bash del repo tranne `.shared`.
+
+**Install:** sul Mac `symlink-setup.sh`; su Omarchy **solo** `install-omarchy.sh` — mai `symlink-setup.sh`/`brew.sh`/`.osx` (romperebbero o sono inutili su Omarchy).
 
 ## Common Development Tasks
 
@@ -89,13 +101,16 @@ This sets preferences for Finder, Safari, system services, and more. Always revi
 
 ### Shell Configuration Loading Order
 
-When bash starts, `.bash_profile` sources files in this order:
+On the **Mac**, when bash starts `.bash_profile` sources files in this order:
 1. `~/.extra` (optional, user-created, for sensitive/machine-specific config)
 2. `~/.bash_prompt` (PS1 and prompt customization)
 3. `~/.exports` (environment variables)
 4. `~/.aliases` (command aliases)
 5. `~/.functions` (bash functions)
 6. `~/.secret` and `~/.dc` (optional, if they exist)
+7. `~/proj/dotfiles/.shared` (portable aliases/functions/history, sourced **last** so it wins — e.g. the history/dedup/realtime-sync settings live here, not in `.exports`/`.bash_profile`)
+
+On **Omarchy**, `.bash_profile`/`.bash_prompt`/`.inputrc` are NOT used; Omarchy's own `~/.bashrc` loads its stack and then sources `~/.extra`, which sources `.shared`.
 
 This layering allows:
 - Core reusable configs in repo (exported/aliases/functions)
