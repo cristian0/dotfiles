@@ -27,6 +27,20 @@ if [ ! -f "${SHARED}" ]; then
 fi
 
 # 1. aggancia .shared da ~/.extra (idempotente)
+#
+# Nota: su air ~/.extra NON è un file locale usa-e-getta ma un symlink a
+# omarchy-air/extra del repo homeserver — la config specifica dell'Air
+# (cm/mm/pimg) è versionata lì, non qui (.extra resta gitignored in questo
+# repo). Lo script rispetta il symlink: lo segue e, se .shared è già
+# agganciato, non tocca il file tracciato.
+if [ -L "${EXTRA}" ]; then
+	if [ ! -e "${EXTRA}" ]; then
+		echo "✖  ${EXTRA} è un symlink rotto: manca il target"
+		echo "   (atteso ~/proj/homeserver/omarchy-air/extra — clona/posiziona il repo homeserver)."
+		exit 1
+	fi
+	echo "•  ~/.extra → $(readlink "${EXTRA}") (symlink gestito dal repo homeserver)"
+fi
 touch "${EXTRA}"
 if grep -qF "dotfiles/.shared" "${EXTRA}"; then
 	echo "•  ~/.extra aggancia già .shared — niente da fare"

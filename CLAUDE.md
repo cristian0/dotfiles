@@ -19,9 +19,11 @@ This is a personal dotfiles repository containing shell configuration, aliases, 
 |---|---|---|
 | **Portabile** (Mac + Omarchy) | `.shared` | **default per roba nuova**; parti OS-specifiche in `if __is_mac` |
 | **Solo Mac** | `.aliases`, `.functions`, `.exports`, `.bash_profile`, `.bash_prompt`, `.inputrc` | solo il Mac; su Omarchy esistono ma NON sono usati |
-| **Solo Omarchy / privato** | `~/.extra` (gitignored) | locale di macchina; su Omarchy sorge anche `.shared` |
+| **Solo Omarchy / privato** | `~/.extra` (gitignored qui) | locale di macchina; su Omarchy sorge anche `.shared` |
 
 `.shared` è sorgente in fondo a `.bash_profile` (Mac) e da `~/.extra` (Omarchy), così vince sempre sulle impostazioni precedenti. Omarchy ha il suo stack (starship/eza/zoxide) e NON usa i file bash del repo tranne `.shared`.
+
+**`~/.extra` su air (Omarchy):** non è un file locale usa-e-getta ma un **symlink** a `~/proj/homeserver/omarchy-air/extra`, versionato nel repo *homeserver* (dove è documentato il setup Air). Lì vivono le funzioni specifiche dell'Air (`cm`, `mm`, `pimg`); `~/.extra` sorgenta comunque `.shared` da questo repo. Quindi resta gitignored *qui* (dotfiles non lo traccia mai) ma di fatto è tracciato *là*: non trattarlo come file da ricreare/riscrivere a vuoto — `install-omarchy.sh` lo rispetta e si limita a verificare l'aggancio di `.shared`.
 
 **Install:** sul Mac `symlink-setup.sh`; su Omarchy **solo** `install-omarchy.sh` — mai `symlink-setup.sh`/`brew.sh`/`.osx` (romperebbero o sono inutili su Omarchy).
 
