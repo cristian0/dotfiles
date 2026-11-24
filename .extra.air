@@ -1,0 +1,34 @@
+# Config shell specifica di air (Omarchy). Tracciata in questo repo (dotfiles),
+# symlinkata come ~/.extra da install-omarchy.sh. Il Mac NON la sorgenta.
+
+# Alias e funzioni portabili condivisi col Mac (repo ~/proj/dotfiles)
+[ -r ~/proj/dotfiles/.shared ] && source ~/proj/dotfiles/.shared
+
+# ssh-agent di systemd (ssh-agent.socket); environment.d lo passa anche alla sessione grafica
+export SSH_AUTH_SOCK="${SSH_AUTH_SOCK:-$XDG_RUNTIME_DIR/ssh-agent.socket}"
+
+# cm: apre o riprende una sessione tmux sul Mac di casa (vedi ~/bin/cc su mac)
+#   cm              selettore fzf
+#   cm <nome>       progetto in ~/proj o ~/work
+#   cm <percorso>   cartella sul Mac di casa
+cm() {
+	mosh --server=/opt/homebrew/bin/mosh-server mac -- /Users/cristiano/bin/cc "$@"
+}
+
+# mm: come `ssh mac` ma via mosh (shell di login sul Mac di casa, senza tmux)
+mm() {
+	mosh --server=/opt/homebrew/bin/mosh-server mac
+}
+
+# pimg: invia l'immagine negli appunti al Mac di casa e copia il suo percorso (Wayland)
+pimg() {
+	local name
+	name="pimg-$(date +%Y%m%d-%H%M%S).png"
+	if ! wl-paste --list-types 2>/dev/null | grep -qx 'image/png'; then
+		echo "pimg: nessuna immagine PNG negli appunti" >&2
+		return 1
+	fi
+	wl-paste --type image/png | ssh mac "mkdir -p /tmp/pimg && cat > /tmp/pimg/$name" &&
+		printf '/tmp/pimg/%s' "$name" | wl-copy &&
+		echo "/tmp/pimg/$name (percorso copiato negli appunti)"
+}

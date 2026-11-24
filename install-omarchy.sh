@@ -8,8 +8,9 @@
 #     sovrascriverebbe il ~/.bashrc di Omarchy, che fa il bootstrap di
 #     OMARCHY_PATH + starship + eza + zoxide. Risultato: shell rotta.
 #
-# Qui facciamo l'unica cosa necessaria e sicura: agganciare il file portabile
-# .shared dal ~/.extra di Omarchy (che Omarchy sorge in fondo al suo ~/.bashrc).
+# Qui facciamo l'unica cosa necessaria e sicura: symlinkare ~/.extra alla
+# config specifica di air (.extra.air di questo repo), che a sua volta sorge
+# .shared. Omarchy sorge ~/.extra in fondo al suo ~/.bashrc.
 # Tutto ciò che è Mac-only (.aliases/.functions/.bash_profile/...) resta
 # inutilizzato su questa macchina. Vedi README → "Dove vanno le modifiche".
 
@@ -17,40 +18,31 @@ set -euo pipefail
 
 REPO="${HOME}/proj/dotfiles"
 SHARED="${REPO}/.shared"
+EXTRA_AIR="${REPO}/.extra.air"
 EXTRA="${HOME}/.extra"
 
 # 0. sanity check
-if [ ! -f "${SHARED}" ]; then
-	echo "✖  Manca ${SHARED}."
+if [ ! -f "${SHARED}" ] || [ ! -f "${EXTRA_AIR}" ]; then
+	echo "✖  Manca ${SHARED} o ${EXTRA_AIR}."
 	echo "   Clona prima il repo:  git clone <url> ${REPO}"
 	exit 1
 fi
 
-# 1. aggancia .shared da ~/.extra (idempotente)
+# 1. ~/.extra -> .extra.air (idempotente)
 #
-# Nota: su air ~/.extra NON è un file locale usa-e-getta ma un symlink a
-# omarchy-air/extra del repo homeserver — la config specifica dell'Air
-# (cm/mm/pimg) è versionata lì, non qui (.extra resta gitignored in questo
-# repo). Lo script rispetta il symlink: lo segue e, se .shared è già
-# agganciato, non tocca il file tracciato.
-if [ -L "${EXTRA}" ]; then
-	if [ ! -e "${EXTRA}" ]; then
-		echo "✖  ${EXTRA} è un symlink rotto: manca il target"
-		echo "   (atteso ~/proj/homeserver/omarchy-air/extra — clona/posiziona il repo homeserver)."
-		exit 1
-	fi
-	echo "•  ~/.extra → $(readlink "${EXTRA}") (symlink gestito dal repo homeserver)"
-fi
-touch "${EXTRA}"
-if grep -qF "dotfiles/.shared" "${EXTRA}"; then
-	echo "•  ~/.extra aggancia già .shared — niente da fare"
+# La config di shell di air vive QUI (dotfiles, file .extra.air tracciato),
+# non nel repo homeserver: così air dipende solo da dotfiles, presente su ogni
+# macchina. cm/mm/pimg stanno in .extra.air; il Mac non la sorgenta.
+if [ -L "${EXTRA}" ] && [ "$(readlink "${EXTRA}")" = "${EXTRA_AIR}" ]; then
+	echo "•  ~/.extra già symlink a .extra.air — niente da fare"
 else
-	{
-		echo ""
-		echo "# Alias e funzioni portabili condivisi col Mac (repo dotfiles)"
-		echo "[ -r ~/proj/dotfiles/.shared ] && source ~/proj/dotfiles/.shared"
-	} >> "${EXTRA}"
-	echo "•  aggiunto il source di .shared a ~/.extra"
+	if [ -e "${EXTRA}" ] || [ -L "${EXTRA}" ]; then
+		backup="${EXTRA}.bak.$(date +%Y%m%d-%H%M%S)"
+		mv "${EXTRA}" "${backup}"
+		echo "•  ~/.extra preesistente spostato in ${backup}"
+	fi
+	ln -s "${EXTRA_AIR}" "${EXTRA}"
+	echo "•  creato symlink ~/.extra → ${EXTRA_AIR}"
 fi
 
 echo
